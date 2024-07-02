@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   description: "An online banking system",
   icons: {
     icon: '/icons/logo.svg'
-};
-
+},
+}
 export default function RootLayout({
   children,
 }: Readonly<{
