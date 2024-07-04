@@ -22,7 +22,11 @@ const DoughnutChart = ({ accounts }: DoughnutChartProps) => {
 data={data} 
 options={{
     cutout: '60%',
-    plugins: {}
+    plugins: {
+        legend: {
+            display: false
+        }
+    }
 }}
 />
   
