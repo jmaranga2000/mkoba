@@ -3,6 +3,15 @@ import Link from "next/link";
 import React from "react";
 import BankCard from "./BankCard";
 
+interface RightSidebarProps {
+  user: {
+    name: string;
+    email: string;
+  };
+  transactions: any[]; // Adjust the type according to your data structure
+  banks:Account []; // Adjust the type according to your data structure
+}
+
 const RightSidebar = ({ user, transactions, banks }: RightSidebarProps) => {
   return (
     <aside className="right-sidebar">

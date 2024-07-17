@@ -29,28 +29,13 @@ const MobileNav = ({ user }: MobileNavProps) => {
             className="cursor-pointer"
           />
         </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="border-none
-       bg-white"
-        >
+        <SheetContent side="left" className="border-none bg-white">
           <Link
             href="/"
-            className="
-            cursor-pointer
-            flex
-            items-center gap-1 px-4"
+            className="cursor-pointer flex items-center gap-1 px-4"
           >
-            <Image
-              src="/icons/logo.svg"
-              width={34}
-              height={34}
-              alt="Mkoba logo"
-            />
-            <h1
-              className="text-26 fonnt-ibm-plex-serif
-          font-bold text-black-1"
-            >
+            <Image src="/icons/logo.svg" width={34} height={34} alt="Mkoba logo" />
+            <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">
               Mkoba
             </h1>
           </Link>
@@ -60,17 +45,16 @@ const MobileNav = ({ user }: MobileNavProps) => {
                 {sidebarLinks.map((item) => {
                   const isActive =
                     pathname === item.route ||
-                    pathname.startsWith("${item.route}/");
+                    pathname.startsWith(`${item.route}/`);
                   return (
                     <SheetClose asChild key={item.route}>
-                         <Link
-                      href={item.route}
-                      key={item.label}
-                      className={cn("mobilenav-sheet_close w-full", {
-                        "bg-bank-gradient": isActive,
-                      })}
-                    >
-                     
+                      <Link
+                        href={item.route}
+                        key={item.label}
+                        className={cn("mobilenav-sheet_close w-full", {
+                          "bg-bank-gradient": isActive,
+                        })}
+                      >
                         <Image
                           src={item.imgURL}
                           alt={item.label}
@@ -80,25 +64,20 @@ const MobileNav = ({ user }: MobileNavProps) => {
                             "brightness-[3] invert-0": isActive,
                           })}
                         />
-                      
-                      <p
-                        className={cn("text-16 font-semibold text-black-2", {
-                          "!text-white": isActive,
-                        })}
-                      >
-                        {item.label}
-                      </p>
-                    </Link>
+                        <p
+                          className={cn("text-16 font-semibold text-black-2", {
+                            "!text-white": isActive,
+                          })}
+                        >
+                          {item.label}
+                        </p>
+                      </Link>
                     </SheetClose>
-                   
                   );
                 })}
-
-                USER
               </nav>
             </SheetClose>
-
-            <Footer user={user} type='mobile' />
+            <Footer user={user} type="mobile" />
           </div>
         </SheetContent>
       </Sheet>
