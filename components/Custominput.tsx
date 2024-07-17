@@ -1,28 +1,45 @@
-// components/Custominput.tsx
+import React from 'react'
+import { FormControl, FormField, FormLabel, FormMessage } from './ui/form'
+import { Input } from './ui/input'
 
-import React from 'react';
-import { Controller } from 'react-hook-form';
+import { Control, FieldPath } from 'react-hook-form'
+import { z } from 'zod'
+import { authFormSchema } from '@/lib/utils'
 
-interface CustomInputProps {
-  control: any;
-  name: string;
-  label: string;
-  placeholder: string;
+const formSchema = authFormSchema('sign-up')
+
+interface CustomInput {
+  control: Control<z.infer<typeof formSchema>>,
+  name: FieldPath<z.infer<typeof formSchema>>,
+  label: string,
+  placeholder: string
 }
 
-const Custominput: React.FC<CustomInputProps> = ({ control, name, label, placeholder }) => {
+const CustomInput = ({ control, name, label, placeholder }: CustomInput) => {
   return (
-    <Controller
-      name={name}
+    <FormField
       control={control}
+      name={name}
       render={({ field }) => (
         <div className="form-item">
-          <label className="form-label">{label}</label>
-          <input {...field} placeholder={placeholder} className="form-input" />
+          <FormLabel className="form-label">
+            {label}
+          </FormLabel>
+          <div className="flex w-full flex-col">
+            <FormControl>
+              <Input 
+                placeholder={placeholder}
+                className="input-class"
+                type={name === 'password' ? 'password' : 'text'}
+                {...field}
+              />
+            </FormControl>
+            <FormMessage className="form-message mt-2" />
+          </div>
         </div>
       )}
     />
-  );
-};
+  )
+}
 
-export default Custominput;
+export default CustomInput
