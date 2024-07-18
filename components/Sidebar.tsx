@@ -7,6 +7,7 @@ import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Footer from "./Footer";
+import PlaidLink from "./PlaidLink";
 
 interface SidebarProps {
   user: any; // Replace 'any' with a more specific type if possible
@@ -61,6 +62,8 @@ const Sidebar = ({ user }: SidebarProps) => {
             </Link>
           );
         })}
+
+        <PlaidLink user={user} />
       </nav>
       <Footer user={user} />
     </section>

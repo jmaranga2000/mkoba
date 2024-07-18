@@ -2,10 +2,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import BankCard from './BankCard'
+import { countTransactionCategories } from '@/lib/utils'
 
 
-const RightSidebar = ({ user, transactions, banks }: RightSidebarProps) => {
-  
+const RightSidebar = ({ user, transactions, banks }:
+   RightSidebarProps) => {
+  const categories: CategoryCount[] =
+  countTransactionCategories(transactions);
 
   return (
     <aside className="right-sidebar">
@@ -13,7 +16,7 @@ const RightSidebar = ({ user, transactions, banks }: RightSidebarProps) => {
         <div className="profile-banner" />
         <div className="profile">
           <div className="profile-img">
-            <span className="text-5xl font-bold text-blue-500">{user.name[0]}</span>
+            <span className="text-5xl font-bold text-blue-500">{user.firstName[0]}</span>
           </div>
 
           <div className="profile-details">
@@ -66,6 +69,15 @@ const RightSidebar = ({ user, transactions, banks }: RightSidebarProps) => {
           </div>
         )}
 
+        <div className="mt-10 flex flex-1 flex-col gap-6">
+          <h2 className="header-2">Top categories</h2>
+
+          <div className='space-y-5'>
+            {categories.map((category, index) => (
+              <Category key={category.name} category={category} />
+            ))}
+          </div>
+        </div>
        
       </section>
     </aside>
