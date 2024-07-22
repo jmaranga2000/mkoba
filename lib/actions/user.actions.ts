@@ -37,6 +37,10 @@ export const signIn = async ({ email, password }: signInProps) => {
     const { account } = await createAdminClient();
     const session = await account.createEmailPasswordSession(email, password);
 
+    if (!session || !session.secret) {
+      throw new Error('Session creation failed');
+    }
+
     cookies().set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
@@ -44,41 +48,42 @@ export const signIn = async ({ email, password }: signInProps) => {
       secure: true,
     });
 
-    const user = await getUserInfo({ userId: session.userId }) 
+    const user = await getUserInfo({ userId: session.userId });
 
     return parseStringify(user);
   } catch (error) {
     console.error('Error', error);
+    throw new Error('Sign-in failed');
   }
-}
+};
+
+
 
 export const signUp = async ({ password, ...userData }: SignUpParams) => {
   const { email, firstName, lastName } = userData;
-  
-  let newUserAccount;
 
   try {
     const { account, database } = await createAdminClient();
 
-    newUserAccount = await account.create(
-      ID.unique(), 
-      email, 
-      password, 
+    const newUserAccount = await account.create(
+      ID.unique(),
+      email,
+      password,
       `${firstName} ${lastName}`
     );
 
-    if(!newUserAccount) throw new Error('Error creating user')
+    if (!newUserAccount) throw new Error('Error creating user');
 
     const dwollaCustomerUrl = await createDwollaCustomer({
       ...userData,
-      type: 'personal'
-    })
+      type: 'personal',
+    });
 
-    if(!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer')
+    if (!dwollaCustomerUrl) throw new Error('Error creating Dwolla customer');
 
     const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
 
-    const newUser = await database.createDocument(
+    await database.createDocument(
       DATABASE_ID!,
       USER_COLLECTION_ID!,
       ID.unique(),
@@ -86,11 +91,15 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
         ...userData,
         userId: newUserAccount.$id,
         dwollaCustomerId,
-        dwollaCustomerUrl
+        dwollaCustomerUrl,
       }
-    )
+    );
 
     const session = await account.createEmailPasswordSession(email, password);
+
+    if (!session || !session.secret) {
+      throw new Error('Session creation failed');
+    }
 
     cookies().set("appwrite-session", session.secret, {
       path: "/",
@@ -99,25 +108,23 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
       secure: true,
     });
 
-    return parseStringify(newUser);
+    return parseStringify(newUserAccount);
   } catch (error) {
     console.error('Error', error);
+    throw new Error('Sign-up failed');
   }
-}
-
-export async function getLoggedInUser(): Promise<any> {
+};
+export async function getLoggedInUser() {
   try {
     const { account } = await createSessionClient();
-    const result = await account.get();
-
-    const user = await getUserInfo({ userId: result.$id });
+    const user = await account.get();
 
     return parseStringify(user);
   } catch (error) {
-    console.log(error);
     return null;
   }
 }
+
 
 export const logoutAccount = async (): Promise<boolean> => {
   try {
@@ -144,7 +151,7 @@ export const createLinkToken =async (user:User) => {
         language: 'en',
         country_codes: ['KE'] as CountryCode[],
     }
-    const response = await plaidClient. linkTokenCtreate
+    const response = await plaidClient. linkTokenCreate
     (tokenParams);
     return parseStringify({ linkToken: response.data.
       link_token
@@ -165,7 +172,7 @@ export const createBankAccount = async ({
 }: createBankAccountProps) => {
   try {
     const { database } = await createAdminClient();
-    const bankAccounts = await database.createDocument(
+    const bankAccount = await database.createDocument(
       DATABASE_ID!,
       BANK_COLLECTION_ID!,
       ID.unique(),
@@ -231,7 +238,7 @@ export const exchangePublicToken = async ({
       accountId: accountData.account_id,
       accessToken,
       fundingSourceUrl,
-      sharableId: encryptId(accountData.account_id),
+      shareableId: encryptId(accountData.account_id),
     });
 
     // Revalidate the path to reflect the changes
