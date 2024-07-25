@@ -5,7 +5,8 @@ from '../appwrite';
 import { ID, Query } from 'node-appwrite';
 import { cookies } from 'next/headers';
 import { encryptId, extractCustomerIdFromUrl, parseStringify } from '../utils';
-import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from 'plaid';
+import { CountryCode, ProcessorTokenCreateRequest, 
+  ProcessorTokenCreateRequestProcessorEnum, Products } from 'plaid';
 import { plaidClient } from '@/lib/plaid';
 import { revalidatePath } from 'next/cache';
 import { addFundingSource, createDwollaCustomer } from './dwolla.actions';
@@ -37,14 +38,11 @@ export const signIn = async ({ email, password }: signInProps) => {
     const { account } = await createAdminClient();
     const session = await account.createEmailPasswordSession(email, password);
 
-    if (!session || !session.secret) {
-      throw new Error('Session creation failed');
-    }
-
-    cookies().set("appwrite-session", session.secret, {
-      path: "/",
+  
+    cookies().set('appwrite-session', session.secret, {
+      path: '/',
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: 'strict',
       secure: true,
     });
 
@@ -52,25 +50,27 @@ export const signIn = async ({ email, password }: signInProps) => {
 
     return parseStringify(user);
   } catch (error) {
-    console.error('Error', error);
-    throw new Error('Sign-in failed');
+    console.error('Error fetching logged in user', error);
+    return null;
   }
 };
-
-
 
 export const signUp = async ({ password, ...userData }: SignUpParams) => {
   const { email, firstName, lastName } = userData;
 
+  let newUserAccount;
+
   try {
     const { account, database } = await createAdminClient();
 
-    const newUserAccount = await account.create(
+    
+    newUserAccount = await account.create(
       ID.unique(),
       email,
       password,
       `${firstName} ${lastName}`
     );
+
 
     if (!newUserAccount) throw new Error('Error creating user');
 
@@ -83,7 +83,7 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
 
     const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
 
-    await database.createDocument(
+    const newUser = await database.createDocument(
       DATABASE_ID!,
       USER_COLLECTION_ID!,
       ID.unique(),
@@ -96,11 +96,6 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
     );
 
     const session = await account.createEmailPasswordSession(email, password);
-
-    if (!session || !session.secret) {
-      throw new Error('Session creation failed');
-    }
-
     cookies().set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
@@ -110,30 +105,34 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
 
     return parseStringify(newUserAccount);
   } catch (error) {
-    console.error('Error', error);
-    throw new Error('Sign-up failed');
+    console.error('Error during sign-up process:', error);
   }
 };
 export async function getLoggedInUser() {
   try {
     const { account } = await createSessionClient();
-    const user = await account.get();
+
+    const result = await account.get();
+
+    const user = await getUserInfo({ userId: result.$id})
 
     return parseStringify(user);
   } catch (error) {
+    console.log(error)
     return null;
   }
 }
 
 
-export const logoutAccount = async (): Promise<boolean> => {
+export const logoutAccount = async ()  => {
   try {
     const { account } = await createSessionClient();
     cookies().delete('appwrite-session');
     await account.deleteSession('current');
-    return true;
+
+   
   } catch (error) {
-    console.error('Error', error);
+   
     return false;
   }
 };
@@ -188,6 +187,7 @@ export const createBankAccount = async ({
     return parseStringify(bankAccount);
 
   } catch (error) {
+    console.log(error);
 
   }
 }

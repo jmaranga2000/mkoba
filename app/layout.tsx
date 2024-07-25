@@ -13,7 +13,7 @@ const ibmPlexSerif = IBM_Plex_Serif({
 
 export const metadata: Metadata = {
   title: "Mkoba",
-  description: "Mkoba is a modern banking platform for everyone.",
+  description: "Mkoba is a modern banking platform for everyone around the banking world.",
   icons: {
     icon: '/icons/logo.svg'
   }

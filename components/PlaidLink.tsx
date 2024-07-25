@@ -27,7 +27,7 @@ const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
     })
 
     router.push('/');
-  }, [user])
+  }, [router,user])
   
   const config: PlaidLinkOptions = {
     token,

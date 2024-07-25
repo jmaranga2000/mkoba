@@ -3,15 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-interface FooterProps {
-  user: {
-    name: string;
-    email: string;
-  };
-  type?: 'desktop' | 'mobile';
-}
-
-const Footer  = ({ user, type = 'desktop' }) => {
+const Footer  = ({ user, type = 'desktop' }: FooterProps) => {
   const router = useRouter();
 
   const handleLogOut = async () => {

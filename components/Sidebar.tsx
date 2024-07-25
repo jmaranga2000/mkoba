@@ -2,18 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React from "react";
 import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Footer from "./Footer";
 import PlaidLink from "./PlaidLink";
 
-interface SidebarProps {
-  user: any; // Replace 'any' with a more specific type if possible
-}
 
-const Sidebar = ({ user }: SidebarProps) => {
+
+const Sidebar = ({ user }: SiderbarProps) => {
   const pathname = usePathname();
 
   return (

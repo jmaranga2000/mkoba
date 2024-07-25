@@ -71,14 +71,11 @@ const AuthForm = ({ type }: { type: string }) => {
           password: data.password,
         })
 
-        if(response) {
-          // Optionally, you can also set the user state here to reflect the logged-in user.
-          setUser(response);
-          router.push('/')
-        }
+        if(response) router.push('/')
+        
       }
     } catch (error) {
-      console.log('Error during authentication:', error);
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -167,6 +164,7 @@ const AuthForm = ({ type }: { type: string }) => {
             <Link href={type === 'sign-in' ? '/sign-up' : '/sign-in'} className="form-link">
               {type === 'sign-in' ? 'Sign up' : 'Sign in'}
             </Link>
+         
           </footer>
         </>
       )}
